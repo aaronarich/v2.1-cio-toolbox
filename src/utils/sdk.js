@@ -1,4 +1,4 @@
-export const loadSdk = (siteId, region = 'us') => {
+export const loadSdk = (writeKey, region = 'us', siteId = null) => {
     return new Promise((resolve, reject) => {
         if (window.analytics) {
             resolve();
@@ -7,7 +7,22 @@ export const loadSdk = (siteId, region = 'us') => {
 
         var t = window.analytics = [];
         t.invoked = !1;
-        t._writeKey = siteId; // Explicitly set the write key
+        t._writeKey = writeKey; // Explicitly set the write key
+
+        // Set load options for in-app messaging if siteId is provided
+        if (siteId) {
+            t._loadOptions = {
+                integrations: {
+                    'Customer.io In-App Plugin': {
+                        siteId: siteId,
+                        events: (e) => {
+                            console.log('[In-App Message Event]', e.type, e);
+                        }
+                    }
+                }
+            };
+        }
+
         t.methods = [
             "trackSubmit", "trackClick", "trackLink", "trackForm", "pageview",
             "identify", "reset", "group", "track", "ready", "alias", "debug",
@@ -38,7 +53,7 @@ export const loadSdk = (siteId, region = 'us') => {
             t.onerror = () => reject(new Error("Failed to load Customer.io SDK"));
         };
 
-        t.load(siteId);
+        t.load(writeKey);
         t.page();
     });
 };

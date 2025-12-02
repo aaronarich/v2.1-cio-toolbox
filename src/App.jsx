@@ -14,12 +14,13 @@ function App() {
     setLogs(prev => [...prev, { timestamp, type, message, payload }]);
   };
 
-  const handleConnect = async (apiKey, region) => {
+  const handleConnect = async (apiKey, region, siteId) => {
     try {
-      addLog('info', `Initializing SDK with key: ${apiKey} (${region.toUpperCase()})...`);
-      await loadSdk(apiKey, region);
+      const siteIdMsg = siteId ? ` with Site ID for In-App Messaging` : '';
+      addLog('info', `Initializing SDK with key: ${apiKey} (${region.toUpperCase()})${siteIdMsg}...`);
+      await loadSdk(apiKey, region, siteId);
       setIsConnected(true);
-      addLog('init', 'SDK initialized successfully');
+      addLog('init', 'SDK initialized successfully' + (siteId ? ' (In-App Messaging enabled)' : ''));
     } catch (error) {
       addLog('error', 'Failed to initialize SDK', error.message);
     }

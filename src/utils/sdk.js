@@ -1,66 +1,83 @@
 export const loadSdk = (writeKey, region = 'us', siteId = null) => {
-    return new Promise((resolve, reject) => {
-        if (window.analytics) {
+    return new Promise((resolve) => {
+        if (window.analytics && window.analytics.initialized) {
             // SDK already loaded, just send a page call
             window.analytics.page();
             resolve();
             return;
         }
 
-        var t = window.analytics = [];
-        t.invoked = !1;
-        t._writeKey = writeKey;
-
         // Build load options for in-app messaging if siteId is provided
         const loadOptions = siteId ? {
             integrations: {
                 'Customer.io In-App Plugin': {
-                    siteId: siteId,
-                    events: (e) => {
-                        console.log('[In-App Message Event]', e.type, e);
-                    }
+                    siteId: siteId
                 }
             }
         } : {};
 
-        t.methods = [
-            "trackSubmit", "trackClick", "trackLink", "trackForm", "pageview",
-            "identify", "reset", "group", "track", "ready", "alias", "debug",
-            "page", "once", "off", "on", "addSourceMiddleware",
-            "addIntegrationMiddleware", "setAnonymousId", "addDestinationMiddleware"
-        ];
-        t.factory = function (e) {
-            return function () {
-                var n = Array.prototype.slice.call(arguments);
-                n.unshift(e);
-                t.push(n);
-                return t;
-            };
-        };
-        for (var i = 0; i < t.methods.length; i++) {
-            var key = t.methods[i];
-            t[key] = t.factory(key);
-        }
-        t.load = function (writeKey, options) {
-            var s = document.createElement("script");
-            s.type = "text/javascript";
-            s.async = !0;
-            const domain = region === 'eu' ? 'cdp-eu.customer.io' : 'cdp.customer.io';
-            s.src = "https://" + domain + "/v1/analytics-js/snippet/" + writeKey + "/analytics.min.js";
-            var a = document.getElementsByTagName("script")[0];
-            a.parentNode.insertBefore(s, a);
-            t._loadOptions = options;
-            s.onload = () => {
-                // Send page call after SDK is fully loaded
-                if (window.analytics && window.analytics.page) {
-                    window.analytics.page();
+        // Customer.io analytics.js stub
+        var analytics = window.analytics = window.analytics || [];
+        if (!analytics.initialize) {
+            if (analytics.invoked) {
+                window.console && console.error && console.error("Customer.io snippet included twice.");
+            } else {
+                analytics.invoked = !0;
+                analytics.methods = [
+                    "trackSubmit", "trackClick", "trackLink", "trackForm", "pageview",
+                    "identify", "reset", "group", "track", "ready", "alias", "debug",
+                    "page", "once", "off", "on", "addSourceMiddleware",
+                    "addIntegrationMiddleware", "setAnonymousId", "addDestinationMiddleware"
+                ];
+                analytics.factory = function (method) {
+                    return function () {
+                        var args = Array.prototype.slice.call(arguments);
+                        args.unshift(method);
+                        analytics.push(args);
+                        return analytics;
+                    };
+                };
+                for (var i = 0; i < analytics.methods.length; i++) {
+                    var key = analytics.methods[i];
+                    analytics[key] = analytics.factory(key);
                 }
-                resolve();
-            };
-            s.onerror = () => reject(new Error("Failed to load Customer.io SDK"));
-        };
+                analytics.load = function (key, options) {
+                    var script = document.createElement("script");
+                    script.type = "text/javascript";
+                    script.async = true;
+                    const domain = region === 'eu' ? 'cdp-eu.customer.io' : 'cdp.customer.io';
+                    script.src = "https://" + domain + "/v1/analytics-js/snippet/" + key + "/analytics.min.js";
+                    var first = document.getElementsByTagName("script")[0];
+                    first.parentNode.insertBefore(script, first);
+                    analytics._loadOptions = options;
+                };
+                analytics._writeKey = writeKey;
+                analytics.SNIPPET_VERSION = "4.15.3";
 
-        t.load(writeKey, loadOptions);
+                // Load the SDK with options
+                analytics.load(writeKey, loadOptions);
+
+                // Send initial page call
+                analytics.page();
+
+                // Use ready callback to know when SDK is fully initialized
+                analytics.ready(function () {
+                    if (siteId) {
+                        console.log('[CIO SDK] In-App Messaging enabled with Site ID:', siteId);
+                    }
+                    resolve();
+                });
+
+                // Set a timeout in case ready never fires
+                setTimeout(() => {
+                    resolve();
+                }, 5000);
+            }
+        } else {
+            // Already initialized
+            analytics.page();
+            resolve();
+        }
     });
 };
 

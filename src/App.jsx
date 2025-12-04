@@ -48,7 +48,7 @@ function App() {
     <div className="app-container" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem', height: 'calc(100vh - 4rem)' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', overflowY: 'auto' }}>
         <header>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #38bdf8, #818cf8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #68826C, #86efac)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Customer.io Pipelines SDK
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>

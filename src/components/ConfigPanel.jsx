@@ -1,18 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 
 const ConfigPanel = ({ onConnect, onDisconnect, isConnected }) => {
-    const [apiKey, setApiKey] = useState('');
-    const [region, setRegion] = useState('us');
-    const [siteId, setSiteId] = useState('');
-
-    useEffect(() => {
-        const storedKey = localStorage.getItem('cio_api_key');
-        const storedRegion = localStorage.getItem('cio_region');
-        const storedSiteId = localStorage.getItem('cio_site_id');
-        if (storedKey) setApiKey(storedKey);
-        if (storedRegion) setRegion(storedRegion);
-        if (storedSiteId) setSiteId(storedSiteId);
-    }, []);
+    const [apiKey, setApiKey] = useState(() => localStorage.getItem('cio_api_key') || '');
+    const [region, setRegion] = useState(() => localStorage.getItem('cio_region') || 'us');
+    const [siteId, setSiteId] = useState(() => localStorage.getItem('cio_site_id') || '');
 
     const handleConnect = (e) => {
         e.preventDefault();

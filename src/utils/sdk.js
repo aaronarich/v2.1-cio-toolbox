@@ -37,11 +37,11 @@ export const loadSdk = (writeKey, region = 'us', siteId = null) => {
                 return t;
             };
         };
-        for (var e = 0; e < t.methods.length; e++) {
-            var key = t.methods[e];
+        for (var i = 0; i < t.methods.length; i++) {
+            var key = t.methods[i];
             t[key] = t.factory(key);
         }
-        t.load = function (n, e) {
+        t.load = function (n) {
             var t = document.createElement("script");
             t.type = "text/javascript";
             t.async = !0;

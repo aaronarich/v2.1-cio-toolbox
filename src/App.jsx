@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ConfigPanel from './components/ConfigPanel';
 import DebugConsole from './components/DebugConsole';
 import IdentityForm from './components/IdentityForm';

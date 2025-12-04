@@ -1,27 +1,27 @@
 export const loadSdk = (writeKey, region = 'us', siteId = null) => {
     return new Promise((resolve, reject) => {
         if (window.analytics) {
+            // SDK already loaded, just send a page call
+            window.analytics.page();
             resolve();
             return;
         }
 
         var t = window.analytics = [];
         t.invoked = !1;
-        t._writeKey = writeKey; // Explicitly set the write key
+        t._writeKey = writeKey;
 
-        // Set load options for in-app messaging if siteId is provided
-        if (siteId) {
-            t._loadOptions = {
-                integrations: {
-                    'Customer.io In-App Plugin': {
-                        siteId: siteId,
-                        events: (e) => {
-                            console.log('[In-App Message Event]', e.type, e);
-                        }
+        // Build load options for in-app messaging if siteId is provided
+        const loadOptions = siteId ? {
+            integrations: {
+                'Customer.io In-App Plugin': {
+                    siteId: siteId,
+                    events: (e) => {
+                        console.log('[In-App Message Event]', e.type, e);
                     }
                 }
-            };
-        }
+            }
+        } : {};
 
         t.methods = [
             "trackSubmit", "trackClick", "trackLink", "trackForm", "pageview",
@@ -41,20 +41,26 @@ export const loadSdk = (writeKey, region = 'us', siteId = null) => {
             var key = t.methods[i];
             t[key] = t.factory(key);
         }
-        t.load = function (n) {
-            var t = document.createElement("script");
-            t.type = "text/javascript";
-            t.async = !0;
+        t.load = function (writeKey, options) {
+            var s = document.createElement("script");
+            s.type = "text/javascript";
+            s.async = !0;
             const domain = region === 'eu' ? 'cdp-eu.customer.io' : 'cdp.customer.io';
-            t.src = "https://" + domain + "/v1/analytics-js/snippet/" + n + "/analytics.min.js";
+            s.src = "https://" + domain + "/v1/analytics-js/snippet/" + writeKey + "/analytics.min.js";
             var a = document.getElementsByTagName("script")[0];
-            a.parentNode.insertBefore(t, a);
-            t.onload = () => resolve();
-            t.onerror = () => reject(new Error("Failed to load Customer.io SDK"));
+            a.parentNode.insertBefore(s, a);
+            t._loadOptions = options;
+            s.onload = () => {
+                // Send page call after SDK is fully loaded
+                if (window.analytics && window.analytics.page) {
+                    window.analytics.page();
+                }
+                resolve();
+            };
+            s.onerror = () => reject(new Error("Failed to load Customer.io SDK"));
         };
 
-        t.load(writeKey);
-        t.page();
+        t.load(writeKey, loadOptions);
     });
 };
 

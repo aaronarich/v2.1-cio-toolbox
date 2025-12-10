@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Toolbox Handle -->
+  <path d="M22 14 H42 V22 H22 Z" fill="none" stroke="#68826C" stroke-width="4" />
+  
+  <!-- Toolbox Body -->
+  <rect x="8" y="22" width="48" height="32" rx="4" fill="#0F281E" />
+  
+  <!-- Toolbox Lid/Separation Line -->
+  <line x1="8" y1="30" x2="56" y2="30" stroke="#68826C" stroke-width="2" />
+  
+  <!-- Latch -->
+  <rect x="28" y="22" width="8" height="6" rx="1" fill="#68826C" />
+</svg>

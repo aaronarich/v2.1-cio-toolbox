@@ -49,35 +49,37 @@ function App() {
   };
 
   return (
-    <div className="app-container" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 400px', gap: '2rem', alignItems: 'start' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-        <header>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #68826C, #86efac)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Customer.io Pipelines SDK
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
-            Test and validate your Customer.io integration in real-time.
-          </p>
-        </header>
+    <div className="app-container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem' }}>
+      <header style={{ marginBottom: '2rem', textAlign: 'left' }}>
+        <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #68826C, #86efac)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          Customer.io Pipelines SDK
+        </h1>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
+          Test and validate your Customer.io integration in real-time.
+        </p>
+      </header>
 
-        <ConfigPanel
-          onConnect={handleConnect}
-          onDisconnect={handleDisconnect}
-          isConnected={isConnected}
-          isRedacted={isRedacted}
-          onToggleRedaction={setIsRedacted}
-        />
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 400px', gap: '2rem', alignItems: 'start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <ConfigPanel
+            onConnect={handleConnect}
+            onDisconnect={handleDisconnect}
+            isConnected={isConnected}
+            isRedacted={isRedacted}
+            onToggleRedaction={setIsRedacted}
+          />
 
-        <div style={{ opacity: isConnected ? 1 : 0.5, pointerEvents: isConnected ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            <IdentityForm onIdentify={handleIdentify} disabled={!isConnected} />
-            <EventForm onTrack={handleTrack} disabled={!isConnected} />
+          <div style={{ opacity: isConnected ? 1 : 0.5, pointerEvents: isConnected ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+              <IdentityForm onIdentify={handleIdentify} disabled={!isConnected} />
+              <EventForm onTrack={handleTrack} disabled={!isConnected} />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div style={{ position: 'sticky', top: '2rem' }}>
-        <DebugConsole logs={logs} isRedacted={isRedacted} />
+        <div style={{ position: 'sticky', top: '2rem' }}>
+          <DebugConsole logs={logs} isRedacted={isRedacted} />
+        </div>
       </div>
     </div>
   );

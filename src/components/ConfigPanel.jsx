@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 
-const ConfigPanel = ({ onConnect, onDisconnect, isConnected }) => {
+const ConfigPanel = ({ onConnect, onDisconnect, isConnected, isRedacted, onToggleRedaction }) => {
     const [apiKey, setApiKey] = useState(() => localStorage.getItem('cio_api_key') || '');
     const [region, setRegion] = useState(() => localStorage.getItem('cio_region') || 'us');
     const [siteId, setSiteId] = useState(() => localStorage.getItem('cio_site_id') || '');
-    const [isRedacted, setIsRedacted] = useState(false);
 
     const handleConnect = (e) => {
         e.preventDefault();
@@ -39,7 +38,7 @@ const ConfigPanel = ({ onConnect, onDisconnect, isConnected }) => {
                     <input
                         type="checkbox"
                         checked={isRedacted}
-                        onChange={(e) => setIsRedacted(e.target.checked)}
+                        onChange={(e) => onToggleRedaction(e.target.checked)}
                     />
                     Redact Keys
                 </label>

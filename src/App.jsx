@@ -8,16 +8,20 @@ import { loadSdk, identify, track, reset } from './utils/sdk';
 function App() {
   const [isConnected, setIsConnected] = useState(false);
   const [logs, setLogs] = useState([]);
+  const [isRedacted, setIsRedacted] = useState(false);
 
-  const addLog = (type, message, payload = null) => {
+  const addLog = (type, message, payload = null, secrets = []) => {
     const timestamp = new Date().toLocaleTimeString();
-    setLogs(prev => [...prev, { timestamp, type, message, payload }]);
+    setLogs(prev => [...prev, { timestamp, type, message, payload, secrets }]);
   };
 
   const handleConnect = async (apiKey, region, siteId) => {
     try {
       const siteIdMsg = siteId ? ` with Site ID for In-App Messaging` : '';
-      addLog('info', `Initializing SDK with key: ${apiKey} (${region.toUpperCase()})${siteIdMsg}...`);
+      const secrets = [apiKey];
+      if (siteId) secrets.push(siteId);
+
+      addLog('info', `Initializing SDK with key: ${apiKey} (${region.toUpperCase()})${siteIdMsg}...`, null, secrets);
       await loadSdk(apiKey, region, siteId);
       setIsConnected(true);
       addLog('init', 'SDK initialized successfully' + (siteId ? ' (In-App Messaging enabled)' : ''));
@@ -60,6 +64,8 @@ function App() {
           onConnect={handleConnect}
           onDisconnect={handleDisconnect}
           isConnected={isConnected}
+          isRedacted={isRedacted}
+          onToggleRedaction={setIsRedacted}
         />
 
         <div style={{ opacity: isConnected ? 1 : 0.5, pointerEvents: isConnected ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
@@ -71,7 +77,7 @@ function App() {
       </div>
 
       <div style={{ height: '100%' }}>
-        <DebugConsole logs={logs} />
+        <DebugConsole logs={logs} isRedacted={isRedacted} />
       </div>
     </div>
   );

@@ -1,11 +1,28 @@
 import React, { useEffect, useRef } from 'react';
 
-const DebugConsole = ({ logs }) => {
+const DebugConsole = ({ logs, isRedacted }) => {
     const endRef = useRef(null);
 
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [logs]);
+
+    const redactText = (text, secrets) => {
+        if (!text || !secrets || !secrets.length || !isRedacted) return text;
+        let redactedText = text;
+        secrets.forEach(secret => {
+            if (secret && secret.length > 5) {
+                // Determine visible part (first 5 chars)
+                const visible = secret.substring(0, 5);
+                // Create regex to replace exact matches of the secret
+                // We escape the secret to ensure special chars don't break regex
+                const escapedSecret = secret.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escapedSecret, 'g');
+                redactedText = redactedText.replace(regex, `${visible}...`);
+            }
+        });
+        return redactedText;
+    };
 
     return (
         <div className="card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -45,7 +62,7 @@ const DebugConsole = ({ logs }) => {
                             </span>
                         </div>
                         <div style={{ color: 'var(--text-primary)', wordBreak: 'break-all' }}>
-                            {log.message}
+                            {redactText(log.message, log.secrets)}
                         </div>
                         {log.payload && (
                             <pre style={{
@@ -54,7 +71,7 @@ const DebugConsole = ({ logs }) => {
                                 fontSize: '0.75rem',
                                 overflowX: 'auto'
                             }}>
-                                {JSON.stringify(log.payload, null, 2)}
+                                {redactText(JSON.stringify(log.payload, null, 2), log.secrets)}
                             </pre>
                         )}
                     </div>

@@ -49,8 +49,8 @@ function App() {
   };
 
   return (
-    <div className="app-container" style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '2rem', height: 'calc(100vh - 4rem)' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', overflowY: 'auto' }}>
+    <div className="app-container" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 400px', gap: '2rem', alignItems: 'start' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         <header>
           <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #68826C, #86efac)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             Customer.io Pipelines SDK
@@ -76,7 +76,7 @@ function App() {
         </div>
       </div>
 
-      <div style={{ height: '100%' }}>
+      <div style={{ position: 'sticky', top: '2rem' }}>
         <DebugConsole logs={logs} isRedacted={isRedacted} />
       </div>
     </div>

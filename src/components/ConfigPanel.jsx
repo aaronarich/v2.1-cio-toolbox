@@ -4,6 +4,7 @@ const ConfigPanel = ({ onConnect, onDisconnect, isConnected }) => {
     const [apiKey, setApiKey] = useState(() => localStorage.getItem('cio_api_key') || '');
     const [region, setRegion] = useState(() => localStorage.getItem('cio_region') || 'us');
     const [siteId, setSiteId] = useState(() => localStorage.getItem('cio_site_id') || '');
+    const [isRedacted, setIsRedacted] = useState(false);
 
     const handleConnect = (e) => {
         e.preventDefault();
@@ -25,9 +26,24 @@ const ConfigPanel = ({ onConnect, onDisconnect, isConnected }) => {
         onDisconnect();
     };
 
+    const getDisplayValue = (value) => {
+        if (!isRedacted || !value) return value;
+        return `${value.substring(0, 5)}...`;
+    };
+
     return (
         <div className="card">
-            <h2>Configuration</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <h2 style={{ margin: 0 }}>Configuration</h2>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', cursor: 'pointer', userSelect: 'none' }}>
+                    <input
+                        type="checkbox"
+                        checked={isRedacted}
+                        onChange={(e) => setIsRedacted(e.target.checked)}
+                    />
+                    Redact Keys
+                </label>
+            </div>
             <form onSubmit={handleConnect} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
                     <div style={{ flex: 1 }}>
@@ -36,11 +52,12 @@ const ConfigPanel = ({ onConnect, onDisconnect, isConnected }) => {
                         </label>
                         <input
                             type="text"
-                            value={apiKey}
-                            onChange={(e) => setApiKey(e.target.value)}
+                            value={getDisplayValue(apiKey)}
+                            onChange={(e) => !isRedacted && setApiKey(e.target.value)}
                             placeholder="Enter your Write Key"
                             style={{ width: '100%', boxSizing: 'border-box' }}
                             disabled={isConnected}
+                            readOnly={isRedacted}
                         />
                     </div>
                     <div style={{ width: '120px' }}>
@@ -64,11 +81,12 @@ const ConfigPanel = ({ onConnect, onDisconnect, isConnected }) => {
                     </label>
                     <input
                         type="text"
-                        value={siteId}
-                        onChange={(e) => setSiteId(e.target.value)}
+                        value={getDisplayValue(siteId)}
+                        onChange={(e) => !isRedacted && setSiteId(e.target.value)}
                         placeholder="Enter your Site ID (optional)"
                         style={{ width: '100%', boxSizing: 'border-box' }}
                         disabled={isConnected}
+                        readOnly={isRedacted}
                     />
                 </div>
                 <div style={{ display: 'flex', gap: '1rem' }}>

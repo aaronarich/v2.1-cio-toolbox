@@ -18,6 +18,7 @@ const DebugConsole = ({ logs }) => {
             <div style={{
                 flex: 1,
                 overflowY: 'auto',
+                maxHeight: '600px',
                 background: 'rgba(15, 23, 42, 0.3)',
                 borderRadius: '0.5rem',
                 padding: '1rem',

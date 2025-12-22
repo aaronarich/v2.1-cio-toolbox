@@ -4,7 +4,9 @@ const DebugConsole = ({ logs, isRedacted }) => {
     const endRef = useRef(null);
 
     useEffect(() => {
-        endRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (logs.length > 0) {
+            endRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }
     }, [logs]);
 
     const redactText = (text, secrets) => {
@@ -34,7 +36,10 @@ const DebugConsole = ({ logs, isRedacted }) => {
             </div>
             <div style={{
                 flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
                 overflowY: 'auto',
+                minHeight: '300px',
                 maxHeight: '600px',
                 background: 'rgba(15, 23, 42, 0.3)',
                 borderRadius: '0.5rem',
@@ -44,7 +49,13 @@ const DebugConsole = ({ logs, isRedacted }) => {
                 border: '1px solid var(--border-color)'
             }}>
                 {logs.length === 0 && (
-                    <div style={{ color: 'var(--text-secondary)', textAlign: 'center', marginTop: '2rem' }}>
+                    <div style={{
+                        flex: 1,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'var(--text-secondary)'
+                    }}>
                         Waiting for events...
                     </div>
                 )}

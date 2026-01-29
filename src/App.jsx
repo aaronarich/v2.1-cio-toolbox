@@ -38,9 +38,9 @@ function App() {
     window.location.reload();
   };
 
-  const handleIdentify = (userId, traits) => {
-    addLog('action', `Identifying user: ${userId || traits.email}`, { userId, traits });
-    identify(userId, traits);
+  const handleIdentify = (userId, traits, options) => {
+    addLog('action', `Identifying user: ${userId || traits.email}`, { userId, traits, options });
+    identify(userId, traits, options);
   };
 
   const handleTrack = (eventName, properties) => {

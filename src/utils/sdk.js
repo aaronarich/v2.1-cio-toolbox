@@ -81,9 +81,9 @@ export const loadSdk = (writeKey, region = 'us', siteId = null) => {
     });
 };
 
-export const identify = (userId, traits) => {
+export const identify = (userId, traits, options) => {
     if (window.analytics) {
-        window.analytics.identify(userId, traits);
+        window.analytics.identify(userId, traits, options);
     }
 };
 

@@ -4,6 +4,7 @@ import DebugConsole from './components/DebugConsole';
 import IdentityForm from './components/IdentityForm';
 import EventForm from './components/EventForm';
 import { loadSdk, identify, track, reset } from './utils/sdk';
+import './App.css';
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
@@ -49,7 +50,7 @@ function App() {
   };
 
   return (
-    <div className="app-container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem' }}>
+    <div className="app-container">
       <header style={{ marginBottom: '2rem', textAlign: 'left' }}>
         <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #68826C, #86efac)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
           Customer.io Pipelines SDK
@@ -59,8 +60,8 @@ function App() {
         </p>
       </header>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 400px', gap: '2rem', alignItems: 'start' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+      <div className="main-grid">
+        <div className="config-column">
           <ConfigPanel
             onConnect={handleConnect}
             onDisconnect={handleDisconnect}
@@ -77,7 +78,7 @@ function App() {
           </div>
         </div>
 
-        <div style={{ position: 'sticky', top: '2rem' }}>
+        <div className="debug-column">
           <DebugConsole logs={logs} isRedacted={isRedacted} />
         </div>
       </div>

@@ -11,7 +11,8 @@ export const loadSdk = (writeKey, region = 'us', siteId = null) => {
         const loadOptions = siteId ? {
             integrations: {
                 'Customer.io In-App Plugin': {
-                    siteId: siteId
+                    siteId: siteId,
+                    anonymousInApp: true
                 }
             }
         } : {};

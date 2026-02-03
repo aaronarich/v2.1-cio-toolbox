@@ -12,7 +12,26 @@ export const loadSdk = (writeKey, region = 'us', siteId = null) => {
             integrations: {
                 'Customer.io In-App Plugin': {
                     siteId: siteId,
-                    anonymousInApp: true
+                    anonymousInApp: true,
+                    events: function(event) {
+                        switch (event.type) {
+                            case "in-app:message-opened":
+                                console.log('[CIO SDK] Message Opened', event);
+                                break;
+                            case "in-app:message-dismissed":
+                                console.log('[CIO SDK] Message Dismissed', event);
+                                break;
+                            case "in-app:message-action":
+                                console.log('[CIO SDK] Message Action', event);
+                                break;
+                            case "in-app:message-error":
+                                console.error('[CIO SDK] Message Error', event);
+                                break;
+                            case "in-app:message-changed":
+                                console.log('[CIO SDK] Message Changed', event);
+                                break;
+                        }
+                    }
                 }
             }
         } : {};

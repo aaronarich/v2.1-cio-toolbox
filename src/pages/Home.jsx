@@ -10,7 +10,12 @@ import '../App.css';
 function Home() {
   const [isConnected, setIsConnected] = useState(false);
   const [logs, setLogs] = useState([]);
-  const [isRedacted, setIsRedacted] = useState(false);
+  const [isRedacted, setIsRedacted] = useState(() => localStorage.getItem('cio_redact') === 'true');
+
+  const handleToggleRedaction = (value) => {
+    setIsRedacted(value);
+    localStorage.setItem('cio_redact', value);
+  };
 
   const addLog = (type, message, payload = null, secrets = []) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -75,7 +80,7 @@ function Home() {
             onDisconnect={handleDisconnect}
             isConnected={isConnected}
             isRedacted={isRedacted}
-            onToggleRedaction={setIsRedacted}
+            onToggleRedaction={handleToggleRedaction}
           />
 
           <div style={{ opacity: isConnected ? 1 : 0.5, pointerEvents: isConnected ? 'auto' : 'none', transition: 'opacity 0.3s' }}>

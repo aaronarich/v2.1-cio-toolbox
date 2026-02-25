@@ -3,7 +3,7 @@ import React from 'react';
 const NAV_ITEMS = [
   { label: 'Pipelines SDK', href: '/' },
   { label: 'Hello World', href: '/hello-world' },
-  { label: 'UTM Persistence', href: '/cio-utm-test.html' },
+  { label: 'UTM Persistence', href: '/cio-utm-test' },
 ];
 
 const TopNav = () => {

@@ -1,43 +1,127 @@
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
-const STORAGE_PREFIX = 'cio_utm_';
-const UTM_ELIGIBLE_KEY = 'cio_utm_eligible';
+const UTM_STORAGE_KEY = 'cio_utm_params';
+const UTM_COOKIE_KEY = 'cio_utm_params';
+const UTM_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 90;
 
-const captureUtmsFromUrl = () => {
+const sanitizeUtms = (input) => {
+    const utms = {};
+
+    UTM_KEYS.forEach((key) => {
+        const value = input?.[key];
+        if (typeof value === 'string' && value.trim()) {
+            utms[key] = value.trim();
+        }
+    });
+
+    return utms;
+};
+
+const readUtmsFromLocalStorage = () => {
+    try {
+        const raw = window.localStorage.getItem(UTM_STORAGE_KEY);
+        if (!raw) return {};
+        return sanitizeUtms(JSON.parse(raw));
+    } catch {
+        return {};
+    }
+};
+
+const writeUtmsToLocalStorage = (utmData) => {
+    try {
+        if (!Object.keys(utmData).length) {
+            window.localStorage.removeItem(UTM_STORAGE_KEY);
+            return;
+        }
+        window.localStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(utmData));
+    } catch {
+        // Ignore storage write failures in constrained environments.
+    }
+};
+
+const readUtmsFromCookie = () => {
+    const match = document.cookie
+        .split('; ')
+        .find((cookie) => cookie.startsWith(`${UTM_COOKIE_KEY}=`));
+
+    if (!match) return {};
+
+    try {
+        const raw = decodeURIComponent(match.substring(UTM_COOKIE_KEY.length + 1));
+        return sanitizeUtms(JSON.parse(raw));
+    } catch {
+        return {};
+    }
+};
+
+const writeUtmsToCookie = (utmData) => {
+    if (!Object.keys(utmData).length) {
+        clearPersistedUtmsCookie();
+        return;
+    }
+
+    const encoded = encodeURIComponent(JSON.stringify(utmData));
+    document.cookie = `${UTM_COOKIE_KEY}=${encoded}; path=/; max-age=${UTM_COOKIE_MAX_AGE_SECONDS}; samesite=lax`;
+};
+
+export const clearPersistedUtmsFromLocalStorage = () => {
+    window.localStorage.removeItem(UTM_STORAGE_KEY);
+};
+
+export const clearPersistedUtmsCookie = () => {
+    document.cookie = `${UTM_COOKIE_KEY}=; path=/; max-age=0; samesite=lax`;
+};
+
+export const clearPersistedUtms = () => {
+    clearPersistedUtmsFromLocalStorage();
+    clearPersistedUtmsCookie();
+};
+
+const getUtmsFromCurrentUrl = () => {
     const params = new URLSearchParams(window.location.search);
-    let capturedAny = false;
+    const utms = {};
 
     UTM_KEYS.forEach((key) => {
         const value = params.get(key);
         if (value) {
-            sessionStorage.setItem(`${STORAGE_PREFIX}${key}`, value);
-            capturedAny = true;
+            utms[key] = value;
         }
     });
 
-    if (capturedAny) {
-        sessionStorage.setItem(UTM_ELIGIBLE_KEY, 'true');
+    return sanitizeUtms(utms);
+};
+
+const getPersistedUtms = () => {
+    const localUtms = readUtmsFromLocalStorage();
+    if (Object.keys(localUtms).length) {
+        return localUtms;
     }
+
+    const cookieUtms = readUtmsFromCookie();
+    if (Object.keys(cookieUtms).length) {
+        writeUtmsToLocalStorage(cookieUtms);
+        return cookieUtms;
+    }
+
+    return {};
 };
 
-const getStoredUtms = () => {
-    const utmData = {};
+const syncUtmPersistence = () => {
+    const urlUtms = getUtmsFromCurrentUrl();
+    const persistedUtms = getPersistedUtms();
+    const merged = sanitizeUtms({ ...persistedUtms, ...urlUtms });
 
-    UTM_KEYS.forEach((key) => {
-        const value = sessionStorage.getItem(`${STORAGE_PREFIX}${key}`);
-        if (value) {
-            utmData[key] = value;
-        }
-    });
+    if (Object.keys(merged).length) {
+        writeUtmsToLocalStorage(merged);
+        writeUtmsToCookie(merged);
+    }
 
-    return utmData;
+    return merged;
 };
 
-const buildPagePayload = () => {
-    captureUtmsFromUrl();
-    const utmData = getStoredUtms();
-    const isEligible = sessionStorage.getItem(UTM_ELIGIBLE_KEY) === 'true' && Object.keys(utmData).length > 0;
+export const getUtmPagePayload = () => {
+    const utmData = syncUtmPersistence();
 
-    if (!isEligible) {
+    if (!Object.keys(utmData).length) {
         return {
             url: window.location.href,
         };
@@ -50,12 +134,30 @@ const buildPagePayload = () => {
     };
 };
 
+export const getUtmDebugState = () => {
+    const utmData = syncUtmPersistence();
+    const hasUtms = Object.keys(utmData).length > 0;
+
+    return {
+        utmData,
+        hasUtms,
+        localStorageUtms: readUtmsFromLocalStorage(),
+        cookieUtms: readUtmsFromCookie(),
+        pagePayload: {
+            url: window.location.href,
+            ...(hasUtms ? { utm_eligible: true, ...utmData } : {}),
+        },
+    };
+};
+
 const sendPage = () => {
+    const payload = getUtmPagePayload();
+
     if (!window.analytics || !window.analytics.page) {
         return;
     }
 
-    window.analytics.page(document.title, buildPagePayload());
+    window.analytics.page(document.title, payload);
 };
 
 export const loadSdk = (writeKey, region = 'us', siteId = null) => {

@@ -235,6 +235,24 @@
   background: rgba(248, 113, 113, 0.2);
 }
 
+.utm-control-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.utm-storage-panels {
+  display: grid;
+  gap: 1rem;
+}
+
+.utm-storage-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
 .utm-log-card {
   height: 100%;
   display: flex;

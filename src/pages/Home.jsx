@@ -52,17 +52,17 @@ function Home() {
 
   return (
     <div className="app-container">
-      <header style={{ marginBottom: '2rem', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <header className="page-header">
         <div>
-          <h1 style={{ fontSize: '2.5rem', marginBottom: '0.5rem', background: 'linear-gradient(to right, #68826C, #86efac)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+          <h1 className="page-title">
             Customer.io Pipelines SDK
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '1.125rem' }}>
+          <p className="page-subtitle">
             Test and validate your Customer.io integration in real-time.
           </p>
         </div>
-        <nav>
-          <Link to="/hello-world" className="btn-primary" style={{ textDecoration: 'none' }}>
+        <nav className="page-header-actions">
+          <Link to="/hello-world" className="btn-primary page-link-button">
             Go to Hello World
           </Link>
         </nav>
@@ -78,8 +78,10 @@ function Home() {
             onToggleRedaction={setIsRedacted}
           />
 
-          <div style={{ opacity: isConnected ? 1 : 0.5, pointerEvents: isConnected ? 'auto' : 'none', transition: 'opacity 0.3s' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <div
+            className={`sdk-actions-panel${isConnected ? '' : ' sdk-actions-panel-disabled'}`}
+          >
+            <div className="sdk-actions-stack">
               <IdentityForm onIdentify={handleIdentify} disabled={!isConnected} />
               <EventForm onTrack={handleTrack} disabled={!isConnected} />
             </div>

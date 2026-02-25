@@ -47,6 +47,74 @@
   background: rgba(104, 130, 108, 0.2);
 }
 
+.page-header {
+  margin-bottom: 2rem;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(to right, #68826c, #86efac);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.page-subtitle {
+  color: var(--text-secondary);
+  font-size: 1.125rem;
+}
+
+.page-header-actions {
+  flex-shrink: 0;
+}
+
+.page-link-button {
+  text-decoration: none;
+}
+
+.sdk-actions-panel {
+  transition: opacity 0.3s;
+}
+
+.sdk-actions-panel-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.sdk-actions-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.hello-world-page {
+  min-height: 100vh;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hello-world-title {
+  margin-bottom: 1rem;
+  font-size: 3rem;
+}
+
+.hello-world-subtitle {
+  margin-bottom: 2rem;
+  color: var(--text-secondary);
+}
+
+.hello-world-back-link {
+  text-decoration: none;
+}
+
 .main-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 400px;
@@ -84,6 +152,20 @@
 
   .top-nav-links {
     flex-wrap: wrap;
+  }
+
+  .page-header {
+    gap: 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hello-world-page {
+    padding: 1rem;
+  }
+
+  .hello-world-title {
+    font-size: 2.25rem;
   }
 
   .debug-column {

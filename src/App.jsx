@@ -3,13 +3,14 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import Home from './pages/Home';
 import HelloWorld from './pages/HelloWorld';
 import CioUtmTest from './pages/CioUtmTest';
-import { trackPage } from './utils/sdk';
+import { persistUtmStateForCurrentPage, trackPage } from './utils/sdk';
 import './App.css';
 
 function RoutePageTracker() {
   const location = useLocation();
 
   React.useEffect(() => {
+    persistUtmStateForCurrentPage();
     trackPage();
   }, [location.pathname, location.search, location.hash]);
 

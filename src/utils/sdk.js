@@ -118,6 +118,10 @@ const syncUtmPersistence = () => {
     return merged;
 };
 
+export const persistUtmStateForCurrentPage = () => {
+    syncUtmPersistence();
+};
+
 export const getUtmPagePayload = () => {
     const utmData = syncUtmPersistence();
 

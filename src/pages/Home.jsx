@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import ConfigPanel from '../components/ConfigPanel';
 import DebugConsole from '../components/DebugConsole';
 import IdentityForm from '../components/IdentityForm';
 import EventForm from '../components/EventForm';
+import TopNav from '../components/TopNav';
 import { loadSdk, identify, track, reset } from '../utils/sdk';
 import '../App.css';
 
@@ -52,6 +52,7 @@ function Home() {
 
   return (
     <div className="app-container">
+      <TopNav />
       <header className="page-header">
         <div>
           <h1 className="page-title">
@@ -61,11 +62,6 @@ function Home() {
             Test and validate your Customer.io integration in real-time.
           </p>
         </div>
-        <nav className="page-header-actions">
-          <Link to="/hello-world" className="btn-primary page-link-button">
-            Go to Hello World
-          </Link>
-        </nav>
       </header>
 
       <div className="main-grid">

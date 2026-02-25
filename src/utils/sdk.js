@@ -2,6 +2,7 @@ const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_c
 const UTM_STORAGE_KEY = 'cio_utm_params';
 const UTM_COOKIE_KEY = 'cio_utm_params';
 const UTM_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 90;
+let utmMiddlewareAttached = false;
 
 const sanitizeUtms = (input) => {
     const utms = {};
@@ -138,6 +139,18 @@ export const getUtmPagePayload = () => {
     };
 };
 
+const getPersistedUtmAttributes = () => {
+    const utmData = syncUtmPersistence();
+    if (!Object.keys(utmData).length) {
+        return {};
+    }
+
+    return {
+        utm_eligible: true,
+        ...utmData,
+    };
+};
+
 export const getUtmDebugState = () => {
     const utmData = syncUtmPersistence();
     const hasUtms = Object.keys(utmData).length > 0;
@@ -162,6 +175,27 @@ const sendPage = () => {
     }
 
     window.analytics.page(document.title, payload);
+};
+
+const attachUtmPageMiddleware = () => {
+    const analytics = window.analytics;
+    if (!analytics || !analytics.addSourceMiddleware || utmMiddlewareAttached) {
+        return;
+    }
+
+    analytics.addSourceMiddleware(({ payload, next }) => {
+        if (payload?.obj?.type === 'page') {
+            const attrs = getPersistedUtmAttributes();
+            payload.obj.properties = {
+                ...attrs,
+                ...(payload.obj.properties || {}),
+            };
+        }
+
+        next(payload);
+    });
+
+    utmMiddlewareAttached = true;
 };
 
 export const loadSdk = (writeKey, region = 'us', siteId = null) => {
@@ -242,6 +276,7 @@ export const loadSdk = (writeKey, region = 'us', siteId = null) => {
 
                 // Load the SDK with options
                 analytics.load(writeKey, loadOptions);
+                attachUtmPageMiddleware();
 
                 // Send initial page call
                 sendPage();
@@ -261,6 +296,7 @@ export const loadSdk = (writeKey, region = 'us', siteId = null) => {
             }
         } else {
             // Already initialized
+            attachUtmPageMiddleware();
             sendPage();
             resolve();
         }

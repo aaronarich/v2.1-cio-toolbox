@@ -1,8 +1,68 @@
+const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+const STORAGE_PREFIX = 'cio_utm_';
+const UTM_ELIGIBLE_KEY = 'cio_utm_eligible';
+
+const captureUtmsFromUrl = () => {
+    const params = new URLSearchParams(window.location.search);
+    let capturedAny = false;
+
+    UTM_KEYS.forEach((key) => {
+        const value = params.get(key);
+        if (value) {
+            sessionStorage.setItem(`${STORAGE_PREFIX}${key}`, value);
+            capturedAny = true;
+        }
+    });
+
+    if (capturedAny) {
+        sessionStorage.setItem(UTM_ELIGIBLE_KEY, 'true');
+    }
+};
+
+const getStoredUtms = () => {
+    const utmData = {};
+
+    UTM_KEYS.forEach((key) => {
+        const value = sessionStorage.getItem(`${STORAGE_PREFIX}${key}`);
+        if (value) {
+            utmData[key] = value;
+        }
+    });
+
+    return utmData;
+};
+
+const buildPagePayload = () => {
+    captureUtmsFromUrl();
+    const utmData = getStoredUtms();
+    const isEligible = sessionStorage.getItem(UTM_ELIGIBLE_KEY) === 'true' && Object.keys(utmData).length > 0;
+
+    if (!isEligible) {
+        return {
+            url: window.location.href,
+        };
+    }
+
+    return {
+        url: window.location.href,
+        utm_eligible: true,
+        ...utmData,
+    };
+};
+
+const sendPage = () => {
+    if (!window.analytics || !window.analytics.page) {
+        return;
+    }
+
+    window.analytics.page(document.title, buildPagePayload());
+};
+
 export const loadSdk = (writeKey, region = 'us', siteId = null) => {
     return new Promise((resolve) => {
         if (window.analytics && window.analytics.initialized) {
-            // SDK already loaded, just send a page call
-            window.analytics.page();
+            // SDK already loaded, send a page call with persisted campaign context
+            sendPage();
             resolve();
             return;
         }
@@ -78,7 +138,7 @@ export const loadSdk = (writeKey, region = 'us', siteId = null) => {
                 analytics.load(writeKey, loadOptions);
 
                 // Send initial page call
-                analytics.page();
+                sendPage();
 
                 // Use ready callback to know when SDK is fully initialized
                 analytics.ready(function () {
@@ -95,10 +155,14 @@ export const loadSdk = (writeKey, region = 'us', siteId = null) => {
             }
         } else {
             // Already initialized
-            analytics.page();
+            sendPage();
             resolve();
         }
     });
+};
+
+export const trackPage = () => {
+    sendPage();
 };
 
 export const identify = (userId, traits, options) => {

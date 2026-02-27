@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'r
 import Home from './pages/Home';
 import HelloWorld from './pages/HelloWorld';
 import CioUtmTest from './pages/CioUtmTest';
+import WebhookDataTest from './pages/WebhookDataTest';
 import { persistUtmStateForCurrentPage, trackPage } from './utils/sdk';
 import './App.css';
 
@@ -25,6 +26,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/hello-world" element={<HelloWorld />} />
         <Route path="/cio-utm-test" element={<CioUtmTest />} />
+        <Route path="/webhook-data-test" element={<WebhookDataTest />} />
         <Route path="/cio-utm-test.html" element={<Navigate to="/cio-utm-test" replace />} />
       </Routes>
     </Router>

@@ -4,6 +4,7 @@ const NAV_ITEMS = [
   { label: 'Pipelines SDK', href: '/' },
   { label: 'Hello World', href: '/hello-world' },
   { label: 'UTM Persistence', href: '/cio-utm-test' },
+  { label: 'Webhook Data', href: '/webhook-data-test' },
 ];
 
 const TopNav = () => {
